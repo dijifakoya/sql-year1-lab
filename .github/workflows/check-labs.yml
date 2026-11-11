@@ -1,0 +1,17 @@
+name: check labs
+
+on: [push, pull_request]
+
+jobs:
+  mysql:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start MySQL (pre-installed on the runner)
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -proot -e "SELECT VERSION();"
+      - name: Run every lab against fresh databases
+        env:
+          MYSQL_CMD: mysql -uroot -proot
+        run: python3 tests/check_labs.py
